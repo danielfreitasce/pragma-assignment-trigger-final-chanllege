@@ -17,14 +17,10 @@ public with sharing class OrderTriggerHandler {
 	public void beforeUpdate()
 	{
 		OrderHelper.verificarAlteracaoConta(oldMap, newMap);
-		System.debug('estou no before update');
-		//OrderHelper.obterEnderecoCliente(newOrder);
-		//OrderHelper.buscarItensDoPedido(newMap);
 	}
 
 	public void beforeInsert()
 	{
 		OrderHelper.obterEnderecoCliente(newOrder);
 	}
-
 }

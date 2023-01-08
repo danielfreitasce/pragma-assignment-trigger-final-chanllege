@@ -12,7 +12,7 @@ public with sharing class OrderItemHelper {
 		{
 			orderIdSet.add(orderItem.OrderId);
 		}
-		System.debug('orderIdSet ' + orderIdSet);
+
 		Map<Id, Order> orderMap = new Map<Id, Order>([
 								     SELECT Id, AccountId
 								     FROM Order
@@ -26,9 +26,9 @@ public with sharing class OrderItemHelper {
 		{
 			accountIdSet.add(order.AccountId);
 		}
-		System.debug(' accountIdSet ' + accountIdSet);
+
 		Map<Id, Account> accountMap =  new Map<Id, Account>([SELECT Id, City__c, CEP__c FROM Account WHERE Id IN: accountIdSet]);
-		System.debug('accountMap ' + accountMap);
+
 		//fazer um Set para cada valor de endereço
 		Set<String> listaCeps = new Set<String>();
 		Set<String> listaCidades = new Set<String>();
@@ -39,8 +39,6 @@ public with sharing class OrderItemHelper {
 			listaCidades.add(acc.City__c);
 
 		}
-		System.debug('listaCeps '+ listaCeps);
-		System.debug('listaCidades' + listaCidades);
 
 		//obter os fretes usando os endereços das contas
 
@@ -49,7 +47,6 @@ public with sharing class OrderItemHelper {
 		                                WHERE CEP__c IN : listaCeps OR City__c IN : listaCidades];
 
 
-		System.debug('listaFretes ' + listaFretes);
 		//agrupar por centro de distribuição
 
 		Map<Id, List<Freight__c> > fretePorCDMapa = new Map<Id, List<Freight__c> >();
@@ -69,7 +66,6 @@ public with sharing class OrderItemHelper {
 			}
 		}
 
-		System.debug('fretePorCDMapa LINHA 69' + fretePorCDMapa);
 		//Iterar sobre a lista de fretes
 
 		for(Order order : orderMap.values())
@@ -101,9 +97,7 @@ public with sharing class OrderItemHelper {
 			}
 		}
 
-		System.debug('fretePorCDMapa LINHA 101' + fretePorCDMapa);
 		//calcular por parâmetro de frete
-
 
 		Map<Id, Freight__c> freteComValorMaisElevadoPorCD = new Map<Id, Freight__c>();
 
@@ -111,7 +105,6 @@ public with sharing class OrderItemHelper {
 		{
 
 			AggregateResult ar = totaisPorPedidoMap.get(order);
-			System.debug('AR ' + ar);
 
 			Decimal vol = (Decimal) ar.get('volume');
 			Decimal peso = (Decimal) ar.get('peso');
@@ -130,31 +123,23 @@ public with sharing class OrderItemHelper {
 				//escolher o frete que tenha o parâmetro mais elevado
 				if(valorPorVolume >=  valorPorPeso && valorPorVolume >= valorPorQuant)
 				{
-					//frete.FreightByVolume__c = fretesEscolhidos[0].FreightByVolume__c;
 					freteComValorMaisElevadoPorCD.put(cd,  fretesEscolhidos[0]);
 				}
 				else if(valorPorPeso >= valorPorVolume && valorPorPeso >= valorPorQuant)
 				{
-					//frete.FreightByWeight__c = fretesEscolhidos[0].FreightByWeight__c;
 					freteComValorMaisElevadoPorCD.put(cd,  fretesEscolhidos[0]);
 				}
 				else if(valorPorQuant >= valorPorVolume && valorPorQuant >= valorPorPeso)
 				{
-					//frete.FreightBase__c = fretesEscolhidos[0].FreightBase__c;
 					freteComValorMaisElevadoPorCD.put(cd,  fretesEscolhidos[0]);
 				}
-				//freteComValorMaisElevadoPorCD.put(cd, frete);
 			}
 		}
-
-
-		System.debug('freteComValorMaisElevadoPorCD ' + freteComValorMaisElevadoPorCD);
-
 	}
 
 	private static Map<Id, AggregateResult>  calcTotaisItens(Set<id> orderIdSet)
 	{
-		//aggregate result agrupador por pedido
+		//agrupador por pedido
 
 		List<AggregateResult> resultadosAgrup = [
 			SELECT SUM(Quantity) quantidade, SUM(Volume__c) volume, SUM(Weight__c) peso, OrderId

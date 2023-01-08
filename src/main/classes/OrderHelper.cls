@@ -53,8 +53,4 @@ public with sharing class OrderHelper
 
 		}
 	}
-
-	//calcular valotes totais de volume, peso  e quantidade para cada pedido.
-
-
 }
